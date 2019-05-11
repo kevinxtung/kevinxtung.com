@@ -133,8 +133,10 @@ public class HTTPThread implements Runnable {
     private void buildGETResponse(Request request) throws ResponseException {
         try {
             String URI = request.getURI();
-            String target = "./html/index.html";
-
+            String target = "." + URI;
+            if (target.equals("./")) {          // Adjust in future.
+                target = "./html/index.html";
+            }
             if (true /*its a non api uri*/) {
                 // do a regular get
             }
@@ -197,6 +199,9 @@ public class HTTPThread implements Runnable {
         if (targetExtension.equals("html")) {
             type = "text/html"; 
         }
+        else if (targetExtension.equals("css")) {
+            type = "text/css"; 
+        }
         else if (targetExtension.equals("png")) {
             type = "image/png";
         }
@@ -207,7 +212,7 @@ public class HTTPThread implements Runnable {
             type = "application/json";
         }
         else if (targetExtension.equals("js")) {
-            type = "application/js";
+            type = "text/javascript";
         }
         else {
             // THIS IS A DEFAULT MIME TYPE FOR UNKNOWN EXTENSIONS.
