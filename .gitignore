@@ -1,5 +1,4 @@
 *.class
 .vscode
 old/
-*.java
 notes/
