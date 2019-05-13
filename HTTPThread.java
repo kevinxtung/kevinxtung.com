@@ -102,14 +102,6 @@ public class HTTPThread implements Runnable {
         }
     }
 
-    private boolean fileExists(String path) {
-        File file = new File(path);
-        if (file.exists() && !file.isDirectory()) {
-            return true;
-        }
-        return false;
-    }
-
     private void buildResponse(Request request) throws ResponseException {
         String method = request.getMethod();
 
@@ -134,9 +126,8 @@ public class HTTPThread implements Runnable {
         try {
             String URI = request.getURI();
             String target = "." + URI;
-            if (target.equals("./")) {          // Adjust in future.
-                target = "./html/index.html";
-            }
+            target = RequestValidator.validate(target);
+
             if (true /*its a non api uri*/) {
                 // do a regular get
             }
