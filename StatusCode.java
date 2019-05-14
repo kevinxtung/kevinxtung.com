@@ -3,7 +3,8 @@ public enum StatusCode {
     OK(200, "OK"),
     
     // 3xx Redirection
-    REDIRECT(301, "Moved Permanently"),
+    MOVED_PERMANENTLY(301, "Moved Permanently"),
+    FOUND(302, "Found"),
     
     // 4xx Client Error
     BAD_REQUEST(400, "Bad Request"),
