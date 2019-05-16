@@ -17,6 +17,15 @@ public class Request {
         this.body           = body;
     }
     
+    public Request() {
+        this.requestLine    = "";
+        this.method         = "";
+        this.URI            = "";
+        this.HTTPVersion    = "";
+        this.headers        = "";
+        this.body           = "";
+    }
+
     public String toString() {
         String fullRequest = "";
         fullRequest += requestLine;
@@ -24,6 +33,10 @@ public class Request {
         fullRequest += "\r\n";
         fullRequest += body;
         return fullRequest;
+    }
+
+    public void updateURI(String newURI) {
+        this.URI = newURI;
     }
 
     public String getMethod() {
