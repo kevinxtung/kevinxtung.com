@@ -35,8 +35,11 @@ public class Request {
         return fullRequest;
     }
 
+    // Useful for HTTP error codes.
+    // Method of the request is modified to be a GET to return the error page.
     public void updateURI(String newURI) {
         this.URI = newURI;
+        this.method = "GET";
     }
 
     public String getMethod() {

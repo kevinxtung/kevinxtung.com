@@ -5,17 +5,9 @@ import org.json.JSONException;
 import java.io.*;
 import java.net.*;
 import java.util.concurrent.*;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 
-public class HTTPThread implements Runnable {
-    static final double HTTPVERSION = 1.0;  
-    static final String PATH = ".";         // The prefix for paths of requested files. Possible security flaw?
-
-    static ArrayList<String> supportedMethods   = new ArrayList<>(Arrays.asList("GET"));
-    static ArrayList<String> unsupportedMethods = new ArrayList<>(Arrays.asList("POST", "HEAD", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE", "PATCH"));
-    
+public class HTTPThread implements Runnable {  
     private Socket connectionSocket;                    // Connection socket to client.
     private BufferedReader requestReader;               // Reader of the request message from client.
     private BufferedOutputStream responseDataStream;    // Buffer stream going out to client.
@@ -48,6 +40,7 @@ public class HTTPThread implements Runnable {
             }
         }
         catch (Exception e) {
+
             SocketServer.timestamp(e);
         }
     }
@@ -103,16 +96,15 @@ public class HTTPThread implements Runnable {
 
     private void buildResponse(Request request, StatusCode statusCode) throws ResponseException {
         String method = request.getMethod();
-
         switch(method) {
             case "GET":
                 buildGETResponse(request, statusCode);
                 break;
             default:
-                if (unsupportedMethods.contains(method)) {
+                if (Constants.UNSUPPORTED_METHODS.contains(method)) {
                     throw new ResponseException(StatusCode.NOT_IMPLEMENTED, request);
                 }
-                if (!supportedMethods.contains(method)) {
+                if (!Constants.SUPPORTED_METHODS.contains(method)) {
                     throw new ResponseException(StatusCode.BAD_REQUEST, request);
                 }
         }
@@ -158,7 +150,7 @@ public class HTTPThread implements Runnable {
 
             // RESPONSE STRINGS - Self Explanatory
             // Each requestLine also has the variable end added on, which signifies a carriage return and newrequestLine.
-            String statusLine = "HTTP/" + HTTPVERSION + " " + statusCode.toString() + end;    // Variables from function parameters.
+            String statusLine = "HTTP/" + Constants.HTTP_VERSION + " " + statusCode.toString() + end;    // Variables from function parameters.
             String dateLine = "Date: " + new Date() + end;
             String contentTypeLine = "Content-type: " + getMIMEType(target) + end; // Content type determined by function with appropriate MIME typing.
             String contentLengthLine = "Content-length: " + targetLength + end;   // Length taken from previous stored value above.
