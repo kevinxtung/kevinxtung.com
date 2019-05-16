@@ -28,6 +28,13 @@ public enum StatusCode {
         return "" + this.code + " " + this.description;
     }
 
+    public String toURI() {
+        if (this.code >= 400) {
+            return "/html/error/" + this.code + ".html";
+        }
+        return null;
+    }
+
     public int getCode() {
         return this.code;
     }

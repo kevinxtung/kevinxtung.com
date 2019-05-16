@@ -34,16 +34,21 @@ public class HTTPThread implements Runnable {
     @Override
     public void run() {
         try {
-            Request request = parseRequest();   // Parses request from request reader and returns request data structure.
-            logRequest(request);
-            RequestChecker.validate(request);
-            buildResponse(request, StatusCode.OK);
-        }
-        catch (ResponseException re) {
-            buildResponse(re);
+            try {
+                Request request = parseRequest();   // Parses request from request reader and returns request data structure.
+                logRequest(request);
+                RequestChecker.validate(request);
+                buildResponse(request, StatusCode.OK);
+            }
+            catch (ResponseException re) {
+                buildResponse(re);
+            }
+            catch (Exception e) {
+                buildResponse(new ResponseException(StatusCode.INTERNAL_ERROR, e, new Request()));
+            }
         }
         catch (Exception e) {
-            buildResponse(new ResponseException(StatusCode.INTERNAL_ERROR, e, new Request()));
+            SocketServer.timestamp(e);
         }
     }
     
@@ -112,35 +117,28 @@ public class HTTPThread implements Runnable {
                 }
         }
     }
-    private void buildResponse(ResponseException re) {
-        try {
-            StatusCode statusCode = re.getStatusCode();
-            SocketServer.timestamp("Error code " + re.getStatusCode().toString());
-
-            switch(statusCode) {
-                case MOVED_PERMANENTLY:
-                case FOUND:
-                    String redirectURI = re.getMessage();
-                    Request request = re.getRequest();
-                    request.updateURI(redirectURI);
-                    buildResponse(request, statusCode);
-                    break;
-                
-                case BAD_REQUEST:
-                case UNAUTHORIZED:
-                case FORBIDDEN:
-                case NOT_FOUND: 
-
-                case INTERNAL_ERROR:
-                case NOT_IMPLEMENTED:
-
-                default:
-                    SocketServer.timestamp("reached default. code was" + statusCode.toString());
-            }
+    private void buildResponse(ResponseException re) throws ResponseException, Exception {
+        StatusCode statusCode   = re.getStatusCode();
+        String message          = re.getMessage();
+        Request request         = re.getRequest();
+        switch(statusCode) {
+            case MOVED_PERMANENTLY:
+            case FOUND:
+                request.updateURI(message);
+                break;
+            
+            case BAD_REQUEST:
+            case UNAUTHORIZED:
+            case FORBIDDEN:
+            case NOT_FOUND:
+            case INTERNAL_ERROR:
+            case NOT_IMPLEMENTED:
+                request.updateURI(statusCode.toURI());
+                break;
+            default:
+                throw new Exception("Reached default case in building ResponseException when we should not!");
         }
-        catch (Exception e) {
-
-        }
+        buildResponse(request, statusCode);
     }
 
     private void buildGETResponse(Request request, StatusCode statusCode) throws ResponseException {
@@ -161,7 +159,6 @@ public class HTTPThread implements Runnable {
             // RESPONSE STRINGS - Self Explanatory
             // Each requestLine also has the variable end added on, which signifies a carriage return and newrequestLine.
             String statusLine = "HTTP/" + HTTPVERSION + " " + statusCode.toString() + end;    // Variables from function parameters.
-            SocketServer.timestamp(statusLine);
             String dateLine = "Date: " + new Date() + end;
             String contentTypeLine = "Content-type: " + getMIMEType(target) + end; // Content type determined by function with appropriate MIME typing.
             String contentLengthLine = "Content-length: " + targetLength + end;   // Length taken from previous stored value above.
@@ -238,7 +235,7 @@ public class HTTPThread implements Runnable {
     //  Takes in a File and the file's length.
     //  Returns a bytearray representation of the file.
     //
-    private byte[] fileToBytes(File file, int length) throws IOException {
+    private byte[] fileToBytes(File file, int length) throws IOException, ResponseException {
 		byte[] fileData = new byte[length]; // Create the array of the file's size.
 
 		try {
@@ -247,7 +244,7 @@ public class HTTPThread implements Runnable {
 			fileStream.close();                                     // Close the stream.
 		}
         catch (Exception e) {
-            SocketServer.timestamp(e);  // Notify of any exceptions occuring.
+            throw new ResponseException(StatusCode.INTERNAL_ERROR, new Request());
         }
 
 		return fileData;
