@@ -145,7 +145,7 @@ public class HTTPThread implements Runnable {
 
     private void buildGETResponse(Request request, StatusCode statusCode) throws ResponseException {
         try {
-            String target = '.' + request.getURI();
+            String target = Constants.PATH_TO_WEBSERVER + request.getURI();
             if (true /*its a non api uri*/) {
                 // do a regular get
             }

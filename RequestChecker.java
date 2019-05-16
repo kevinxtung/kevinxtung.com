@@ -31,7 +31,7 @@ public class RequestChecker {
     }
 
     private static boolean fileExists(String path) {
-        File file = new File('.' + path);
+        File file = new File(Constants.PATH_TO_WEBSERVER + path);
         if (file.exists() && !file.isDirectory()) {
             return true;
         }
