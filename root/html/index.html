@@ -6,17 +6,30 @@
   <title>Kevin Tung</title>
   <meta name="description" content="">
   <meta name="author" content="Kevin Tung">
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" id="css_theme" href="/css/light.css">
+  <link rel="stylesheet" id="css_common" href="/css/common.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 <body>
+  <div id="theme_bar">
+    <a href="#" onclick="setTheme('light'); return false;">Light Theme</a> |
+    <a href="#" onclick="setTheme('dark'); return false;"> Dark Theme</a>
+  </div>
+
   <h1>
-    Test HTTP response, please ignore.
+    Welcome to my (under construction) website.
   </h1>
+  <p>
+    Hard hats <i>on</i>, please.
+  </p>
+  <br>
+  <div id="root"></div>
 </body>
 
-<script>
-</script>
+<script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+<script src="/js/index.js" type="text/babel"></script>
 
 </html>
