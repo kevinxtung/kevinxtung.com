@@ -16,6 +16,10 @@ class FeedbackForm extends React.Component {
 }
 
 class FeedbackButton extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
   render() {
     if (!this.props.showForm) {
       return (
